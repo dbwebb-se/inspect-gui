@@ -851,7 +851,7 @@ makeDockerRunExtras()
     # make docker-run-server container="server" what="bash $script $kmom $acronym" 2>&1 | tee -a "$LOGFILE"
 
     # Run the scripts using run.bash through docker-compose
-    header "Docker run ($kmom)" | tee -a "$LOGFILE"
+    header "Docker run scripts" | tee -a "$LOGFILE"
     echo "docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym" | tee -a "$LOGFILE"
     docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym 2>&1 | tee -a "$LOGFILE"
 }
