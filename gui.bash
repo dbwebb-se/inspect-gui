@@ -268,12 +268,6 @@ BROWSER=${DBWEBB_BROWSER:-$BROWSER}
 TO_CLIPBOARD=${DBWEBB_TO_CLIPBOARD:-$TO_CLIPBOARD}
 TEACHER_SIGNATURE=${DBWEBB_TEACHER_SIGNATURE:-"// XXX"}
 
-
-# # Course specific settings
-# REDOVISA_HTTP_PREFIX="http://www.student.bth.se"
-# REDOVISA_HTTP_POSTFIX="me/redovisa/htdocs"
-
-
 # Set source dir for scripts and feedback
 INSPECT_SOURCE_DIR="$DIR/.dbwebb/inspect-src"
 INSPECT_SOURCE_DIR=${DBWEBB_INSPECT_SOURCE_DIR:-$INSPECT_SOURCE_DIR}
