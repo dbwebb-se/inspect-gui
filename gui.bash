@@ -856,11 +856,12 @@ makeDockerRunExtras()
 #
 runPreExtras()
 {
-    local kmom="$1"
+    export KMOM="$1"
+    export ACRONYM="$2"
     local path1="$INSPECT_SOURCE_DIR/kmom.d/pre.bash"
-    local path2="$INSPECT_SOURCE_DIR/kmom.d/$kmom/pre.bash"
+    local path2="$INSPECT_SOURCE_DIR/kmom.d/$KMOM/pre.bash"
 
-    header "Pre $kmom" | tee -a "$LOGFILE"
+    header "Pre $KMOM" | tee -a "$LOGFILE"
 
     if [[ -f "$path1" ]]; then
         # shellcheck source=.dbwebb/script/inspect/kmom.d/pre.bash
@@ -868,7 +869,7 @@ runPreExtras()
     fi
 
     if [[ -f "$path2" ]]; then
-        # shellcheck source=.dbwebb/script/inspect/kmom.d/$kmom/pre.bash
+        # shellcheck source=.dbwebb/script/inspect/kmom.d/$KMOM/pre.bash
         source "$path2" 2>&1 | tee -a "$LOGFILE"
     fi
 }
@@ -880,11 +881,12 @@ runPreExtras()
 #
 runPostExtras()
 {
-    local kmom="$1"
+    export KMOM="$1"
+    export ACRONYM="$2"
     local path1="$INSPECT_SOURCE_DIR/kmom.d/post.bash"
-    local path2="$INSPECT_SOURCE_DIR/kmom.d/$kmom/post.bash"
+    local path2="$INSPECT_SOURCE_DIR/kmom.d/$KMOM/post.bash"
 
-    header "Post $kmom" | tee -a "$LOGFILE"
+    header "Post $KMOM" | tee -a "$LOGFILE"
 
     if [[ -f "$path1" ]]; then
         # shellcheck source=.dbwebb/script/inspect/kmom.d/pre.bash
@@ -892,7 +894,7 @@ runPostExtras()
     fi
 
     if [[ -f "$path2" ]]; then
-        # shellcheck source=.dbwebb/script/inspect/kmom.d/$kmom/pre.bash
+        # shellcheck source=.dbwebb/script/inspect/kmom.d/$KMOM/pre.bash
         source "$path2" 2>&1 | tee -a "$LOGFILE"
     fi
 }
@@ -929,9 +931,9 @@ main()
                 initLogfile "$acronym" "local"
                 # openRedovisaInBrowser "$acronym"
                 feedback "$kmom"
-                runPreExtras "$kmom"
+                runPreExtras "$kmom" "$acronym"
                 makeInspectLocal "$kmom"
-                runPostExtras "$kmom"
+                runPostExtras "$kmom" "$acronym"
                 pressEnterToContinue
                 ;;
             3)
@@ -948,9 +950,9 @@ main()
                     pressEnterToContinue;
                     continue
                 fi
-                runPreExtras "$kmom"
+                runPreExtras "$kmom" "$acronym"
                 makeInspectLocal "$kmom"
-                runPostExtras "$kmom"
+                runPostExtras "$kmom" "$acronym"
                 pressEnterToContinue
                 ;;
             2)
@@ -963,10 +965,10 @@ main()
                 initLogfile "$acronym" "docker"
                 # openRedovisaInBrowser "$acronym"
                 feedback "$kmom"
-                runPreExtras "$kmom"
+                runPreExtras "$kmom" "$acronym"
                 makeInspectDocker "$kmom"
                 makeDockerRunExtras "$kmom" "$acronym"
-                runPostExtras "$kmom"
+                runPostExtras "$kmom" "$acronym"
                 pressEnterToContinue
                 ;;
             1)
@@ -983,10 +985,10 @@ main()
                     pressEnterToContinue;
                     continue
                 fi
-                runPreExtras "$kmom"
+                runPreExtras "$kmom" "$acronym"
                 makeInspectDocker "$kmom"
                 makeDockerRunExtras "$kmom" "$acronym"
-                runPostExtras "$kmom"
+                runPostExtras "$kmom" "$acronym"
                 pressEnterToContinue
                 ;;
             d)
