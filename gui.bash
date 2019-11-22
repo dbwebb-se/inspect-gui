@@ -278,9 +278,8 @@ INSPECT_SOURCE_CONFIG_FILE="$INSPECT_SOURCE_DIR/config.bash"
 # shellcheck source=$DIR/.dbwebb/inspect-src/config.bash
 [[ -f $INSPECT_SOURCE_CONFIG_FILE ]] && source "$INSPECT_SOURCE_CONFIG_FILE"
 
-
 # Useful defaults which are used within the application
-# @TODO This is nor really needed
+# @TODO This is not really needed
 dockerContainer="mysql"
 
 # Remember last menu choice (or set defaults)
@@ -807,8 +806,8 @@ makeInspectDocker()
     #header "dbwebb inspect" | tee -a "$LOGFILE"
 
     if [[ ! -z $DBWEBB_INSPECT_PID ]]; then
-        echo "Killing $DBWEBB_INSPECT_PID" | tee "$LOGFILE_INSPECT"
-        kill -9 $DBWEBB_INSPECT_PID
+        # echo "Killing $DBWEBB_INSPECT_PID" | tee "$LOGFILE_INSPECT"
+        kill -9 $DBWEBB_INSPECT_PID > /dev/null 2>&1
         DBWEBB_INSPECT_PID=
     fi
 
