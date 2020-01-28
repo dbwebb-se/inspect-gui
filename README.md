@@ -66,13 +66,15 @@ tail -f .log/inspect/gui-inspect.ansi
 ```
 
 
-
+<!--
 Configure a course repo
 -------------------------------------
 
 This is how to configure a course repo to use the gui.
 
 TBD
+-->
+
 
 
 ```
