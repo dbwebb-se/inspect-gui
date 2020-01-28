@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.0.0 (2019-11-15)"
+VERSION="v2.0.1 (2020-01-28)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -393,15 +393,17 @@ gui-main-menu()
         "3" "Inspect kmom (download, local)" \
         "4" "Inspect kmom (local)" \
         "" "---" \
-        "d" "Download student me/" \
-        "w" "Open student me/redovisa in browser" \
-        "p" "Potatoe student" \
-        "" "---" \
+        "c" "Course menu" \
         "a" "Admin menu" \
-        "t" "Database menu" \
-        "o" "Docker menu" \
         "q" "Quit" \
         3>&1 1>&2 2>&3 3>&-
+
+        # TODO Clean upp this and remove from script
+        #"" "---" \
+        #"d" "Download student me/" \
+        #"w" "Open student me/redovisa in browser" \
+        #"p" "Potatoe student" \
+        #"o" "Docker menu" \
 }
 
 
@@ -426,47 +428,47 @@ gui-admin-menu()
 
 
 
-#
-#
-#
-gui-database-menu()
-{
-    dialog \
-        --backtitle "$BACKTITLE" \
-        --title "$TITLE" \
-        --menu "Main » Database menu" \
-        24 80 \
-        20 \
-        "u" "Create users dbwebb:password and user:pass into docker mysql" \
-        "l" "Load standard kmom database dump into docker mysql" \
-        "1" "Load student skolan/reset_part1.bash into docker mysql" \
-        "2" "Load student skolan/reset_part2.bash into docker mysql" \
-        "3" "Load student skolan/reset_part3.bash into docker mysql" \
-        "4" "Load student skolan/skolan.sql into docker mysql" \
-        "b" "Back" \
-        3>&1 1>&2 2>&3 3>&-
-}
+# #
+# #
+# #
+# gui-database-menu()
+# {
+#     dialog \
+#         --backtitle "$BACKTITLE" \
+#         --title "$TITLE" \
+#         --menu "Main » Database menu" \
+#         24 80 \
+#         20 \
+#         "u" "Create users dbwebb:password and user:pass into docker mysql" \
+#         "l" "Load standard kmom database dump into docker mysql" \
+#         "1" "Load student skolan/reset_part1.bash into docker mysql" \
+#         "2" "Load student skolan/reset_part2.bash into docker mysql" \
+#         "3" "Load student skolan/reset_part3.bash into docker mysql" \
+#         "4" "Load student skolan/skolan.sql into docker mysql" \
+#         "b" "Back" \
+#         3>&1 1>&2 2>&3 3>&-
+# }
 
 
 
-#
-#
-#
-gui-docker-menu()
-{
-    dialog \
-        --backtitle "$BACKTITLE" \
-        --title "$TITLE" \
-        --menu "Main » Docker menu" \
-        24 80 \
-        20 \
-        "u" "Docker up -d [$dockerContainer]" \
-        "r" "Docker run [$dockerContainer] bash" \
-        "s" "Docker start [$dockerContainer]" \
-        "t" "Docker stop" \
-        "b" "Back" \
-        3>&1 1>&2 2>&3 3>&-
-}
+# #
+# #
+# #
+# gui-docker-menu()
+# {
+#     dialog \
+#         --backtitle "$BACKTITLE" \
+#         --title "$TITLE" \
+#         --menu "Main » Docker menu" \
+#         24 80 \
+#         20 \
+#         "u" "Docker up -d [$dockerContainer]" \
+#         "r" "Docker run [$dockerContainer] bash" \
+#         "s" "Docker start [$dockerContainer]" \
+#         "t" "Docker stop" \
+#         "b" "Back" \
+#         3>&1 1>&2 2>&3 3>&-
+# }
 
 
 
@@ -556,33 +558,19 @@ main-admin-menu()
 
 
 #
-# Drop and create the databases
 #
-# Arg 1: The file[.sql] to load
-# Arg 2: Optional username
-# Arg 3: Optional password
-# Arg 4: Optional database
 #
-runSqlScript()
+gui-course-menu()
 {
-    local sql="$1"
-    local user=${2:-root}
-    local password=${3:-}
-    local host="-hmysql"
-    local database=${4:-}
-
-    if [[ ! -z $password ]]; then
-        password="-p$password"
-    fi
-
-    if [[ ! -f "$sql" ]]; then
-        printf "%s: The SQL file '%s' does not exists.\n" "${FUNCNAME[0]}" "$sql"
-        exit 1
-    fi
-
-    printf "%s\n" "$sql"
-    cat "$sql" \
-        | make docker-run what="mysql --table $host -u$user $password $database"
+    dialog \
+        --backtitle "$BACKTITLE" \
+        --title "$TITLE" \
+        --menu "Main » Course menu" \
+        24 80 \
+        20 \
+        "d" "databas" \
+        "b" "Back" \
+        3>&1 1>&2 2>&3 3>&-
 }
 
 
@@ -590,25 +578,70 @@ runSqlScript()
 #
 #
 #
-main-database-menu()
+main-course-menu()
+{
+    local output
+
+    while true; do
+        output=$( gui-course-menu )
+        case $output in
+            d)
+                main-course-databas-menu
+                ;;
+            b|"")
+                return
+                ;;
+        esac
+    done
+}
+
+
+
+#
+#
+#
+gui-course-databas-menu()
+{
+    dialog \
+        --backtitle "$BACKTITLE" \
+        --title "$TITLE" \
+        --menu "Main » Course » 'databas' menu" \
+        24 80 \
+        20 \
+        "u" "Create users dbwebb:pass and user:pass into docker mysql" \
+        "l" "Load standard kmom database dump into docker mysql" \
+        "1" "Load student skolan/reset_part1.bash into docker mysql" \
+        "2" "Load student skolan/reset_part2.bash into docker mysql" \
+        "3" "Load student skolan/reset_part3.bash into docker mysql" \
+        "4" "Load student skolan/skolan.sql into docker mysql" \
+        "b" "Back" \
+        3>&1 1>&2 2>&3 3>&-
+}
+
+
+
+#
+#
+#
+main-course-databas-menu()
 {
     local output
     local path
 
     while true; do
-        output=$( gui-database-menu )
+        output=$( gui-course-databas-menu )
         case $output in
             u)
                 runSqlScript "example/sql/create-user-dbwebb.sql"
                 runSqlScript "example/sql/create-user-user.sql" "dbwebb"
-                runSqlScript "example/sql/check-users.sql" "dbwebb"
+                runSqlScript "example/sql/check-env.sql" "dbwebb"
                 pressEnterToContinue
                 ;;
             l)
                 kmom=$( gui-read-kmom $kmom )
                 [[ -z $kmom ]] && continue
 
-                for file in $DIR/kmom.d/$kmom/dump_*.sql; do
+                for file in $INSPECT_SOURCE_DIR/kmom.d/$kmom/dump_*.sql; do
                     runSqlScript "$file" "dbwebb"
                 done
                 pressEnterToContinue
@@ -648,40 +681,73 @@ main-database-menu()
 
 
 #
+# Drop and create the databases
 #
+# Arg 1: The file[.sql] to load
+# Arg 2: Optional username
+# Arg 3: Optional password
+# Arg 4: Optional database
 #
-main-docker-menu()
+runSqlScript()
 {
-    local output
+    local sql="$1"
+    local user=${2:-root}
+    local password=${3:-}
+    local host="-hmysql"
+    local database=${4:-}
+    local container="mysql"
 
-    while true; do
-        output=$( gui-docker-menu )
-        case $output in
-            u)
-                dockerContainer=$( gui-read-docker-container "$dockerContainer" )
-                make docker-up container="$dockerContainer"
-                pressEnterToContinue
-                ;;
-            r)
-                dockerContainer=$( gui-read-docker-container "$dockerContainer" )
-                make docker-run container="$dockerContainer" what="bash"
-                pressEnterToContinue
-                ;;
-            s)
-                dockerContainer=$( gui-read-docker-container "$dockerContainer" )
-                make docker-start container="$dockerContainer"
-                pressEnterToContinue
-                ;;
-            t)
-                make docker-stop
-                pressEnterToContinue
-                ;;
-            b|"")
-                return
-                ;;
-        esac
-    done
+    if [[ ! -z $password ]]; then
+        password="-p$password"
+    fi
+
+    if [[ ! -f "$sql" ]]; then
+        printf "%s: The SQL file '%s' does not exists.\n" "${FUNCNAME[0]}" "$sql"
+        exit 1
+    fi
+
+    printf "%s\n" "$sql"
+    cat "$sql" \
+        | make docker-run container="$container" what="mysql --table $host -u$user $password $database"
 }
+
+
+
+# #
+# #
+# #
+# main-docker-menu()
+# {
+#     local output
+# 
+#     while true; do
+#         output=$( gui-docker-menu )
+#         case $output in
+#             u)
+#                 dockerContainer=$( gui-read-docker-container "$dockerContainer" )
+#                 make docker-up container="$dockerContainer"
+#                 pressEnterToContinue
+#                 ;;
+#             r)
+#                 dockerContainer=$( gui-read-docker-container "$dockerContainer" )
+#                 make docker-run container="$dockerContainer" what="bash"
+#                 pressEnterToContinue
+#                 ;;
+#             s)
+#                 dockerContainer=$( gui-read-docker-container "$dockerContainer" )
+#                 make docker-start container="$dockerContainer"
+#                 pressEnterToContinue
+#                 ;;
+#             t)
+#                 make docker-stop
+#                 pressEnterToContinue
+#                 ;;
+#             b|"")
+#                 return
+#                 ;;
+#         esac
+#     done
+# }
 
 
 
@@ -915,12 +981,12 @@ main()
             a)
                 main-admin-menu
                 ;;
-            t)
-                main-database-menu
+            c)
+                main-course-menu
                 ;;
-            o)
-                main-docker-menu
-                ;;
+            # o)
+            #     main-docker-menu
+            #     ;;
             4)
                 acronym=$( gui-read-acronym $acronym )
                 [[ -z $acronym ]] && continue
@@ -991,24 +1057,24 @@ main()
                 runPostExtras "$kmom" "$acronym"
                 pressEnterToContinue
                 ;;
-            d)
-                acronym=$( gui-read-acronym $acronym )
-                [[ -z $acronym ]] && continue
-
-                dbwebb --force --yes download me "$acronym"
-                pressEnterToContinue
-                ;;
-            w)
-                acronym=$( gui-read-acronym $acronym )
-                [[ -z $acronym ]] && continue
-
-                # openRedovisaInBrowser "$acronym"
-                pressEnterToContinue
-                ;;
-            p)
-                potatoe $acronym
-                pressEnterToContinue
-                ;;
+            # d)
+            #     acronym=$( gui-read-acronym $acronym )
+            #     [[ -z $acronym ]] && continue
+            # 
+            #     dbwebb --force --yes download me "$acronym"
+            #     pressEnterToContinue
+            #     ;;
+            # w)
+            #     acronym=$( gui-read-acronym $acronym )
+            #     [[ -z $acronym ]] && continue
+            # 
+            #     # openRedovisaInBrowser "$acronym"
+            #     pressEnterToContinue
+            #     ;;
+            # p)
+            #     potatoe $acronym
+            #     pressEnterToContinue
+            #     ;;
             q)
                 exit 0
                 ;;
