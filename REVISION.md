@@ -3,6 +3,14 @@ Revision history
 
 
 
+v2.1.0 (2020-02-11)
+----------------------------------
+
+* Show version when adding extra arguments.
+* Allow to be installed as part of 'dbwebb gui' command.
+
+
+
 v1.5.0 (2019-10-25)
 ----------------------------------
 
