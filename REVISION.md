@@ -3,7 +3,7 @@ Revision history
 
 
 
-v2.2.0 (2020-03-09)
+v2.2.1 (2020-03-09)
 ----------------------------------
 
 * Add command for 'config' to check or setup the configuration file.
