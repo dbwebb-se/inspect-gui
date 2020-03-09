@@ -11,13 +11,6 @@ MSG_WARNING="\033[43mWARNING\033[0m"
 MSG_FAILED="\033[0;37;41mFAILED\033[0m"
 
 
-if (( $# > 0 )); then
-    echo "$VERSION";
-    exit 0;
-fi
-
-
-
 # ---------------------------- Functions ------------------
 
 #
@@ -43,7 +36,7 @@ pressEnterToContinue()
 #
 input()
 {
-    read -r -p "$1 [$2]: "
+    read -r -p "$1: "
     echo "${REPLY:-$2}"
 }
 
@@ -87,12 +80,12 @@ info()
 # Fail, die and present error message.
 #
 # @arg1 string the message to display.
-# @arg2 string exit status (default -1).
+# @arg2 string exit status (default 1).
 #
 die()
 {
     local message="$1"
-    local status="${2:-1}"
+    local status="${2:1}"
 
     printf "$MSG_FAILED $message\n" >&2
     exit $status
@@ -122,11 +115,43 @@ potatoe()
 
 
 #
+# Use command (wget, curl, lynx) to download url and output to file.
+# The variable OPTION_WITH_WGET_ALT can be used to specify the tool
+# to use, wget is default and options are curl and lynx.
+#
+function getUrlToFile
+{
+    local cmd=
+    local verbose=
+    local url="$1"
+    local filename="$2"
+    local overwrite="$3"
+
+    if [ -z "$OPTION_WITH_WGET_ALT" ] && hash wget 2>/dev/null; then
+        verbose="--quiet"
+        [[ $VERY_VERBOSE ]] && verbose="--verbose" 
+        cmd="wget $verbose -O \"$filename\" \"$url\""
+    elif ([ -z "$OPTION_WITH_WGET_ALT" ] || [ "$OPTION_WITH_WGET_ALT" = "curl" ]) && hash curl 2>/dev/null; then
+        cmd="curl --fail --silent $verbose \"$url\" -o \"$filename\""
+    elif ([ -z "$OPTION_WITH_WGET_ALT" ] || [ "$OPTION_WITH_WGET_ALT" = "lynx" ]) && hash lynx 2>/dev/null; then
+        cmd="lynx -source \"$url\" > \"$filename\""
+    fi
+
+    if [ -f "$filename" ] && [ -z "$overwrite" ]; then
+        die "The file '$filename' already exists, please remove it before you download a new."
+    fi
+    [[ $OPTION_DRY ]] || bash -c "$cmd"
+}
+
+
+
+#
 # Create a config file that are sourced each time the application starts.
 #
 createConfigFile()
 {
-    local source="$DIR/gui_config.bash"
+    local url="https://raw.githubusercontent.com/dbwebb-se/inspect-gui/master/gui_config.bash"
+    local source="/tmp/gui_config.bash$$"
     local reply=
 
     if [[ -f $DBWEBB_GUI_CONFIG_FILE ]]; then
@@ -138,9 +163,25 @@ createConfigFile()
     fi
 
     install -d "$( dirname $DBWEBB_GUI_CONFIG_FILE )"
-    cp "$source" "$DBWEBB_GUI_CONFIG_FILE" \
+    
+    getUrlToFile "$url" "$source" "overwrite" \
+        && cp "$source" "$DBWEBB_GUI_CONFIG_FILE" \
         && printf "Konfigurationsfilen är nu skapad, redigera den i en texteditor.\n" \
         && ls -l "$DBWEBB_GUI_CONFIG_FILE"
+
+    # shellcheck source=$HOME/.dbwebb.gui_config.bash
+    [[ -f $DBWEBB_GUI_CONFIG_FILE ]] && source "$DBWEBB_GUI_CONFIG_FILE"
+}
+
+
+
+#
+# Show and edit the configuration file.
+#
+showAndEditConfigFile()
+{
+    local editor=${EDITOR:-vi}
+    $editor "$DBWEBB_GUI_CONFIG_FILE"
 
     # shellcheck source=$HOME/.dbwebb.gui_config.bash
     [[ -f $DBWEBB_GUI_CONFIG_FILE ]] && source "$DBWEBB_GUI_CONFIG_FILE"
@@ -443,6 +484,7 @@ gui-admin-menu()
         24 80 \
         20 \
         "c" "Create a default configuration file ~/.dbwebb/gui_config.bash" \
+        "e" "Show and edit the user configuration file ~/.dbwebb/gui_config.bash" \
         "s" "Show configuration settings" \
         "r" "View README" \
         "b" "Back" \
@@ -563,6 +605,10 @@ main-admin-menu()
         case $output in
             c)
                 createConfigFile
+                pressEnterToContinue
+                ;;
+            e)
+                showAndEditConfigFile
                 pressEnterToContinue
                 ;;
             s)
@@ -1104,4 +1150,48 @@ main()
         esac
     done
 }
+
+
+
+#
+# Show helptext to exaplin usage of command
+#
+show_help()
+{
+    local txt=(
+"Work with gui inspect."
+"Usage: gui.bash [command]"
+""
+"Command:"
+"  config         Maintain the user configuration file."
+"  help           Print this help and usage message."
+"  version        Print the current version."
+    )
+    printf "%s\n" "${txt[@]}"
+}
+
+
+
+#
+# Check options and then run main function
+#
+if (( $# > 0 )); then
+    case "$1" in
+        config)
+            main-admin-menu;
+            exit 0;
+        ;;
+        help)
+            show_help;
+            exit 0;
+        ;;
+        version)
+            echo "$VERSION";
+            exit 0;
+        ;;
+        *)
+            die "Option/command not recognized.\nUse '$0 help' to get usage." 2
+        ;;
+    esac
+fi
 main

@@ -10,10 +10,8 @@
 #echo $COURSE
 
 # Teacher signature used in feedback text
-export DBWEBB_TEACHER_SIGNATURE="// Mikael (mos@bth.se)"
+export DBWEBB_TEACHER_SIGNATURE="// Läraren (lararen@bth.se)"
 
-# Where are the inspect source files stored, default is in the course repo
-#export DBWEBB_INSPECT_SOURCE_DIR="$DIR/.dbwebb/inspect-src"
 
 
 #
@@ -21,6 +19,11 @@ export DBWEBB_TEACHER_SIGNATURE="// Mikael (mos@bth.se)"
 # The gui-application finds these out, and you can overwrite those settings
 # by defining the following variables.
 #
+
+# Where are the inspect source files stored, default is in the course repo
+#export DBWEBB_INSPECT_SOURCE_DIR="$DIR/.dbwebb/inspect-src"
+
+
 
 # How to open a web browser
 
