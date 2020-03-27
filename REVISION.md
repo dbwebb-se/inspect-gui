@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.3.1 (2020-03-27)
+----------------------------------
+
+* Enable makeDockerValidate for the database exam.
+
+
+
 v2.3.0 (2020-03-27)
 ----------------------------------
 

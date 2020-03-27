@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.3.0 (2020-03-27)"
+VERSION="v2.3.1 (2020-03-27)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -573,10 +573,24 @@ makeValidateDocker()
 {
     local target="$1"
 
-    header "dbwebb validate" "Do dbwebb validate in the background and write output to logfile '$LOGFILE_INSPECT'." | tee -a "$LOGFILE"
+    header "dbwebb validate" "Do dbwebb validate in the background and write output to logfile." | tee -a "$LOGFILE"
     #header "dbwebb inspect" | tee -a "$LOGFILE"
 
-    (cd "$COURSE_DIR" && make docker-run what="make validate what=$target" > "$LOGFILE_INSPECT" 2>&1 &)
+    if [[ ! -z $DBWEBB_INSPECT_PID ]]; then
+        # echo "Killing $DBWEBB_INSPECT_PID" | tee "$LOGFILE_INSPECT"
+        kill -9 $DBWEBB_INSPECT_PID > /dev/null 2>&1
+        DBWEBB_INSPECT_PID=
+    fi
+
+    if [ $OS_TERMINAL == "linux" ]; then
+        setsid make docker-run what="make validate what=$target" > "$LOGFILE_INSPECT" 2>&1 &
+        DBWEBB_INSPECT_PID="$!"
+    else
+        make docker-run what="make validate what=$target" > "$LOGFILE_INSPECT" 2>&1 &
+        DBWEBB_INSPECT_PID="$!"
+    fi
+
+    # (cd "$COURSE_DIR" && make docker-run what="make validate what=$target" > "$LOGFILE_INSPECT" 2>&1 &)
     #(cd "$COURSE_DIR" && make docker-run what="make validate what=$target/" 2>&1  | tee -a "$LOGFILE")
 }
 
