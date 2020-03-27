@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.3.0 (2020-03-27)
+----------------------------------
+
+* Include database exam specifics from database course.
+
+
+
 v2.2.2 (2020-03-09)
 ----------------------------------
 
@@ -36,4 +43,4 @@ v1.4.4 (2019-10-22)
 ----------------------------------
 
 * Lastest version before merging gui.bash to one. Using htmlphp gui.bash as base.
-* 
+*

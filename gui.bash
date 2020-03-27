@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.2.2 (2020-03-09)"
+VERSION="v2.3.0 (2020-03-27)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -50,7 +50,7 @@ input()
 #
 yesNo()
 {
-    
+
     read -r -p "$1 (y/n) [$2]: "
     echo "${REPLY:-$2}"
 }
@@ -129,7 +129,7 @@ function getUrlToFile
 
     if [ -z "$OPTION_WITH_WGET_ALT" ] && hash wget 2>/dev/null; then
         verbose="--quiet"
-        [[ $VERY_VERBOSE ]] && verbose="--verbose" 
+        [[ $VERY_VERBOSE ]] && verbose="--verbose"
         cmd="wget $verbose -O \"$filename\" \"$url\""
     elif ([ -z "$OPTION_WITH_WGET_ALT" ] || [ "$OPTION_WITH_WGET_ALT" = "curl" ]) && hash curl 2>/dev/null; then
         cmd="curl --fail --silent $verbose \"$url\" -o \"$filename\""
@@ -163,7 +163,7 @@ createConfigFile()
     fi
 
     install -d "$( dirname $DBWEBB_GUI_CONFIG_FILE )"
-    
+
     getUrlToFile "$url" "$source" "overwrite" \
         && cp "$source" "$DBWEBB_GUI_CONFIG_FILE" \
         && printf "Konfigurationsfilen är nu skapad, redigera den i en texteditor.\n" \
@@ -226,7 +226,7 @@ function findCourseRepoFile
     while [ "$dir" != "/" ]; do
         dir=$( dirname "$dir" )
         found="$( find "$dir" -maxdepth 1 -name $DBW_COURSE_FILE_NAME )"
-        if [ "$found" ]; then 
+        if [ "$found" ]; then
             DBW_COURSE_DIR="$( dirname "$found" )"
             break
         fi
@@ -244,7 +244,7 @@ function sourceCourseRepoFile
     if [ -f "$DBW_COURSE_FILE" ]; then
         # shellcheck source=$DBW_COURSE_DIR/$DBW_COURSE_FILE_NAME
         source "$DBW_COURSE_FILE"
-    fi    
+    fi
 }
 
 
@@ -263,7 +263,7 @@ function checkTool() {
 
 # ---------------------------- Bootstrap ------------------
 # Check needed utils is available
-# 
+#
 #
 checkTool dialog "Install using your packet manager (apt-get|brew install dialog)."
 checkTool realpath "Install using your packet manager (brew install coreutils)."
@@ -273,6 +273,7 @@ DBW_COURSE_FILE_NAME=".dbwebb.course"
 findCourseRepoFile
 [[ $DBW_COURSE_DIR ]] || die "You must run this command within a valid course repo."
 DIR="$DBW_COURSE_DIR"
+TENTAMEN_DIR="$DIR/exam"
 
 # Get the name of the course as $DBW_COURSE
 sourceCourseRepoFile
@@ -382,7 +383,7 @@ Basic feedback text is created from files in txt/kmom??.txt, add your own teache
 
 /Mikael
 EOD
-    
+
     dialog \
         --backtitle "$BACKTITLE" \
         --title "$TITLE" \
@@ -429,7 +430,7 @@ These are the default settings for using the clipboard when the feedback text is
 
 /Mikael
 EOD
-    
+
     dialog \
         --backtitle "$BACKTITLE" \
         --title "$TITLE" \
@@ -456,6 +457,8 @@ gui-main-menu()
         "2" "Inspect kmom (docker)" \
         "3" "Inspect kmom (download, local)" \
         "4" "Inspect kmom (local)" \
+        "5" "Inspect tentamen (rsync, docker)" \
+        "6" "Inspect tentamen (docker)" \
         "" "---" \
         "c" "Course menu" \
         "a" "Admin menu" \
@@ -492,6 +495,94 @@ gui-admin-menu()
 }
 
 
+
+# ----------------------------- stuff relates to database exam
+#
+#
+#
+gui-show-receipt()
+{
+    local acronym="$1"
+
+    dialog \
+        --backtitle "$BACKTITLE" \
+        --title "Receipt for $acronym" \
+        --msgbox "$( get-receipt $acronym )" \
+        40 80 \
+        3>&1 1>&2 2>&3 3>&-
+}
+
+
+
+#
+#
+#
+get-receipt()
+{
+    local acronym="$1"
+    local message=
+
+    message=$(< "$TENTAMEN_DIR/$acronym/RECEIPT.md" )
+    echo "$TENTAMEN_DIR/$acronym/RECEIPT.md"
+
+    [[ -z $message ]] && message="No RECEIPT.md found for $acronym"
+
+    echo "$message"
+}
+
+
+
+#
+#
+#
+gui-read-seal-version()
+{
+    local acronym="$1"
+    local path=
+
+    select=$( cd "$TENTAMEN_DIR" && find "$acronym" -maxdepth 1 -mindepth 1 -type d | head -1 )
+    path="$TENTAMEN_DIR/$select"
+
+    dialog \
+        --backtitle "$BACKTITLE" \
+        --title "Select sealed version ($acronym)" \
+        --dselect "$path" \
+        24 80 \
+        3>&1 1>&2 2>&3 3>&-
+}
+
+
+
+#
+#
+#
+printReceipt()
+{
+    local acronym="$1"
+
+    header "Receipt" | tee -a "$LOGFILE"
+    printf "\n%s\n\n" "$( get-receipt $acronym )" | tee -a "$LOGFILE"
+}
+
+
+
+#
+# Make a validate using docker.
+#
+makeValidateDocker()
+{
+    local target="$1"
+
+    header "dbwebb validate" "Do dbwebb validate in the background and write output to logfile '$LOGFILE_INSPECT'." | tee -a "$LOGFILE"
+    #header "dbwebb inspect" | tee -a "$LOGFILE"
+
+    (cd "$COURSE_DIR" && make docker-run what="make validate what=$target" > "$LOGFILE_INSPECT" 2>&1 &)
+    #(cd "$COURSE_DIR" && make docker-run what="make validate what=$target/" 2>&1  | tee -a "$LOGFILE")
+}
+
+
+
+# ----------------------------- END OF DATABASE EXAM
 
 # #
 # #
@@ -788,7 +879,7 @@ runSqlScript()
 # main-docker-menu()
 # {
 #     local output
-# 
+#
 #     while true; do
 #         output=$( gui-docker-menu )
 #         case $output in
@@ -1126,17 +1217,53 @@ main()
                 runPostExtras "$kmom" "$acronym"
                 pressEnterToContinue
                 ;;
+            5)
+                #[[ -z $acronym ]] && acronym="abtl18"
+                acronym=$( gui-read-acronym $acronym )
+                [[ -z $acronym ]] && continue
+
+                gui-show-receipt $acronym
+
+                seal=$( gui-read-seal-version $acronym )
+                [[ -z $seal ]] && continue
+                rsync -av --delete "$seal/" "$DIR/me/tentamen/"
+
+                initLogfile "$acronym" "tentamen"
+                openRedovisaInBrowser "$acronym"
+                printReceipt $acronym
+                feedback "tentamen"
+                runPreExtras "tentamen" "$acronym"
+                makeValidateDocker "tentamen"
+                makeDockerRunExtras "tentamen" "$acronym"
+                runPostExtras "tentamen""$acronym"
+                pressEnterToContinue
+                ;;
+            6)
+                #[[ -z $acronym ]] && acronym="abtl18"
+                acronym=$( gui-read-acronym $acronym )
+                [[ -z $acronym ]] && continue
+
+                initLogfile "$acronym" "tentamen"
+                openRedovisaInBrowser "$acronym"
+                printReceipt $acronym
+                feedback "tentamen"
+                runPreExtras "tentamen" "$acronym"
+                makeValidateDocker "tentamen"
+                makeDockerRunExtras "tentamen" "$acronym"
+                runPostExtras "tentamen" "$acronym"
+                pressEnterToContinue
+                ;;
             # d)
             #     acronym=$( gui-read-acronym $acronym )
             #     [[ -z $acronym ]] && continue
-            # 
+            #
             #     dbwebb --force --yes download me "$acronym"
             #     pressEnterToContinue
             #     ;;
             # w)
             #     acronym=$( gui-read-acronym $acronym )
             #     [[ -z $acronym ]] && continue
-            # 
+            #
             #     # openRedovisaInBrowser "$acronym"
             #     pressEnterToContinue
             #     ;;
@@ -1172,6 +1299,7 @@ show_help()
 
 
 
+# ----------------------------- Main loop
 #
 # Check options and then run main function
 #
