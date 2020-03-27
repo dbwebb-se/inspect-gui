@@ -3,7 +3,7 @@ Revision history
 
 
 
-v2.3.2 (2020-03-27)
+v2.3.3 (2020-03-27)
 ----------------------------------
 
 * Avoid output of feedback text into main.
