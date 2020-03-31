@@ -971,9 +971,13 @@ feedback()
     printf "%s" "$output" | eval $TO_CLIPBOARD
 
     if [[ -f "$baseDir/${kmom}_extra.txt" ]]; then
-        #output=$( eval echo "\"$( cat "$DIR/text/${kmom}_extra.txt" )"\" )
         output=$(< "$baseDir/${kmom}_extra.txt" )
         printf "\n\033[32;01m---> Vanliga feedbacksvar\033[0m\n\n%s\n\n" "$output" >> "$LOGFILE_TEXT"
+    fi
+
+    if [[ -f "$baseDir/all.txt" ]]; then
+        output=$(< "$baseDir/all.txt" )
+        printf "\n\033[32;01m---> Bra att ha\033[0m\n\n%s\n\n" "$output" >> "$LOGFILE_TEXT"
     fi
 }
 
