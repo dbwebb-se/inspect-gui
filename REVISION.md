@@ -3,7 +3,7 @@ Revision history
 
 
 
-v2.3.4 (2020-03-31)
+v2.3.5 (2020-03-31)
 ----------------------------------
 
 * Add text/all.txt to output as one place for troubleshooting and common messages.
