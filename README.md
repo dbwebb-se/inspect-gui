@@ -47,7 +47,7 @@ Open your configuration file in a texteditor and customize it.
 Log files
 -------------------------------------
 
-Log files are written to the root of the course repo at `log/inspect`. They are rewritten at each run.
+Log files are written to the root of the course repo at `.log/inspect`. They are rewritten at each run.
 
 | Log file | What |
 |----------|------|
