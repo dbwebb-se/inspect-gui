@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.3.5 (2020-03-31)"
+VERSION="v2.3.6 (2020-08-26)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -930,7 +930,7 @@ runSqlScript()
 #
 header()
 {
-    printf "\n\n\033[0;30;42m>>> ======= %-25s =======\033[0m\n\n" "$1"
+    printf "\n\033[0;30;42m>>> ======= %-25s =======\033[0m\n" "$1"
 
     if [[ $2 ]]; then
         printf "%s\n" "$2"

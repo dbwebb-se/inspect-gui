@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.3.6 (2020-08-26)
+----------------------------------
+
+* Make output more compact by removing some newlines
+
+
+
 v2.3.5 (2020-03-31)
 ----------------------------------
 
