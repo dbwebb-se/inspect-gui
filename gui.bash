@@ -318,7 +318,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then   # Linux, use defaults
 elif [[ "$OSTYPE" == "darwin"* ]]; then   # Mac OSX
     OS_TERMINAL="macOS"
     TO_CLIPBOARD="iconv -t macroman | pbcopy"
-    BROWSER="open /Applications/Firefox.app"
+    BROWSER="/Applications/Firefox.app/Contents/MacOS/firefox"
 elif [[ "$OSTYPE" == "cygwin" ]]; then    # Cygwin
     OS_TERMINAL="cygwin"
     TO_CLIPBOARD="cat - > /dev/clipboard"

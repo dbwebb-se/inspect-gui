@@ -32,7 +32,10 @@ export DBWEBB_TEACHER_SIGNATURE="// Läraren (lararen@bth.se)"
 #export DBWEBB_BROWSER="/cygdrive/c/Program Files (x86)/Firefox Developer Edition/firefox.exe"
 
 # macOs
-#export DBWEBB_BROWSER="open /Applications/Firefox.app"
+#export DBWEBB_BROWSER="/Applications/Firefox.app/Contents/MacOS/firefox"
+#export DBWEBB_BROWSER="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
+#export DBWEBB_BROWSER="/Applications/Microsoft\ Edge.app/Contents/MacOS/Microsoft\ Edge"
+#export DBWEBB_BROWSER="/Applications/Safari.app/Contents/MacOS/Safari"
 
 # linux
 #export DBWEBB_BROWSER="firefox"
