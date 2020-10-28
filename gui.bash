@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.3.8 (2020-10-08)"
+VERSION="v2.3.9 (2020-10-08)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -540,7 +540,7 @@ gui-read-seal-version()
     local acronym="$1"
     local path=
 
-    select=$( cd "$TENTAMEN_DIR" && find "$acronym" -maxdepth 1 -mindepth 1 -type d | head -1 )
+    select=$( cd "$TENTAMEN_DIR" && find "$acronym" -maxdepth 1 -mindepth 1 -type d | tail -1 )
     path="$TENTAMEN_DIR/$select"
 
     dialog \
@@ -1244,7 +1244,14 @@ main()
 
                 seal=$( gui-read-seal-version $acronym )
                 [[ -z $seal ]] && continue
-                rsync -av --delete "$seal/" "$DIR/me/tentamen/"
+
+                if [[ -d "$seal" ]]; then
+                    rsync -av --delete "$seal/" "$DIR/me/tentamen/"
+                else
+                    printf "\n$MSG_FAILED Sealed version is not a directory."
+                    pressEnterToContinue
+                    continue
+                fi
 
                 initLogfile "$acronym" "tentamen"
                 openRedovisaInBrowser "$acronym"

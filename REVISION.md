@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.3.9 (2020-10-28)
+----------------------------------
+
+* Be a bit more resilient when rsyncing exam to me/tentamen.
+
+
+
 v2.3.8 (2020-10-08)
 ----------------------------------
 
