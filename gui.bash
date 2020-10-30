@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.3.10 (2020-10-28)"
+VERSION="v2.4.0 (2020-10-29)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -1201,10 +1201,17 @@ makeDockerRunExtras()
     # echo 'make docker-run-server container="server" what="bash $script $kmom $acronym"' | tee -a "$LOGFILE"
     # make docker-run-server container="server" what="bash $script $kmom $acronym" 2>&1 | tee -a "$LOGFILE"
 
-    # Run the scripts using run.bash through docker-compose
     header "Docker run scripts" | tee -a "$LOGFILE"
-    echo "docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym" | tee -a "$LOGFILE"
-    docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym 2>&1 | tee -a "$LOGFILE"
+
+    # Only if there are scripts to execute for kmom
+    local kmomScripts="$path/../$kmom"
+    if [[ ! -d "$kmomScripts" || -z "$(ls -A $kmomScripts)" ]]; then
+       echo "No script to execute in docker." | tee -a "$LOGFILE"
+    else
+        # Run the scripts using run.bash through docker-compose
+        echo "docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym" | tee -a "$LOGFILE"
+        docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym 2>&1 | tee -a "$LOGFILE"
+    fi
 }
 
 

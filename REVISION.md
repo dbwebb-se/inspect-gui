@@ -8,6 +8,7 @@ v2.4.0 (2020-10-29)
 
 * Include functions hasGitTagBetween and getSemanticVersion to be able to use outside of docker.
 * Include functions openUrl and openSpecificUrl.
+* Ignore running docker when scripts are missing.
 
 
 
