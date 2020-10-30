@@ -3,6 +3,14 @@ Revision history
 
 
 
+v2.4.0 (2020-10-29)
+----------------------------------
+
+* Include functions hasGitTagBetween and getSemanticVersion to be able to use outside of docker.
+* Include functions openUrl and openSpecificUrl.
+
+
+
 v2.3.10 (2020-10-28)
 v2.3.9 (2020-10-28)
 ----------------------------------
