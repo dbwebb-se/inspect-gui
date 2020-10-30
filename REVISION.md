@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.4.1 (2020-10-29)
+----------------------------------
+
+* Fix checking directory for ignore running docker when scripts are missing.
+
+
+
 v2.4.0 (2020-10-29)
 ----------------------------------
 

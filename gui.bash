@@ -1204,9 +1204,9 @@ makeDockerRunExtras()
     header "Docker run scripts" | tee -a "$LOGFILE"
 
     # Only if there are scripts to execute for kmom
-    local kmomScripts="$path/../$kmom"
+    local kmomScripts="$( dirname "$path" )/$kmom"
     if [[ ! -d "$kmomScripts" || -z "$(ls -A $kmomScripts)" ]]; then
-       echo "No script to execute in docker." | tee -a "$LOGFILE"
+       echo "No scripts to execute in docker for '$kmom'." | tee -a "$LOGFILE"
     else
         # Run the scripts using run.bash through docker-compose
         echo "docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym" | tee -a "$LOGFILE"
