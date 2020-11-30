@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.5.1 (2020-10-30)
+----------------------------------
+
+* Check if docker log exists before reading it.
+
+
+
 v2.5.0 (2020-10-30)
 ----------------------------------
 
