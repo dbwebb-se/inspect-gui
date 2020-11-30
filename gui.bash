@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.4.0 (2020-10-29)"
+VERSION="v2.5.0 (2020-11-30)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -276,6 +276,29 @@ function openUrl {
 
 
 #
+# Open an Git http or git@ url browser
+#
+# @arg1 the remote as https or git@gitxxx.com
+#
+function openGitUrl {
+    local url="$1"
+    #local re="^(https|git)(:\/\/|@)([^\/:]+)[\/:]([^\/:]+)\/(.+).git$"
+    local re="^git@(.+):(.+)\/(.+)\.git$"
+
+    if [[ $url == https://* ]]; then
+        openUrl "$url"
+    elif [[ $url =~ $re ]]; then
+        hostname=${BASH_REMATCH[1]}
+        user=${BASH_REMATCH[2]}
+        repo=${BASH_REMATCH[3]}
+        gitUrl="https://$hostname/$user/$repo"
+        openUrl "$gitUrl"
+    fi
+}
+
+
+
+#
 # Open a specific url in the default browser, but use a base url if it
 # does not exists as a local relative path.
 #
@@ -412,7 +435,10 @@ hash tree 2>/dev/null \
 
 # Where to store the logfiles
 LOG_BASE_DIR="$DIR/.log/inspect"
-install -d "$LOG_BASE_DIR"
+install -d -m 0777 "$LOG_BASE_DIR"
+
+LOG_DOCKER_REL=".log/inspect/docker.txt"
+export LOG_DOCKER="$DIR/$LOG_DOCKER_REL"
 
 LOGFILE="$LOG_BASE_DIR/gui-main.ansi"
 LOGFILE_INSPECT="$LOG_BASE_DIR/gui-inspect.ansi"
@@ -1209,15 +1235,15 @@ makeDockerRunExtras()
        echo "No scripts to execute in docker for '$kmom'." | tee -a "$LOGFILE"
     else
         # Run the scripts using run.bash through docker-compose
-        echo "docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym" | tee -a "$LOGFILE"
-        docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym 2>&1 | tee -a "$LOGFILE"
+        echo "docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym $LOG_DOCKER_REL" | tee -a "$LOGFILE"
+        docker-compose -f docker-compose.yaml run --service-ports server bash $script $kmom $acronym $LOG_DOCKER_REL 2>&1 | tee -a "$LOGFILE"
     fi
 }
 
 
 
 #
-# Run extra testscripts that are executed before inspect.
+# Run extra testscripts that are executed before docker.
 #
 runPreExtras()
 {
@@ -1242,7 +1268,7 @@ runPreExtras()
 
 
 #
-# Run extra testscripts that are executed after inspect.
+# Run extra testscripts that are executed after docker.
 #
 runPostExtras()
 {
@@ -1250,6 +1276,8 @@ runPostExtras()
     export ACRONYM="$2"
     local path1="$INSPECT_SOURCE_DIR/kmom.d/post.bash"
     local path2="$INSPECT_SOURCE_DIR/kmom.d/$KMOM/post.bash"
+    local output=
+    local url=
 
     header "Post $KMOM" | tee -a "$LOGFILE"
 
@@ -1262,6 +1290,39 @@ runPostExtras()
         # shellcheck source=.dbwebb/script/inspect/kmom.d/$KMOM/pre.bash
         source "$path2" 2>&1 | tee -a "$LOGFILE"
     fi
+
+    url=$( publishLogFileToServer )
+
+    #[[ -f "$LOG_DOCKER_ABS" ]] && output=$( eval echo "\"$( cat "$LOG_DOCKER_ABS" )"\" )
+    output=$( eval echo "\"$( cat "$LOG_DOCKER" )"\" )
+    #printf "\n%s\n" "$output" | tee -a "$LOGFILE"
+    printf "%s" "$output" | eval $TO_CLIPBOARD
+}
+
+
+
+#
+# Publish the logfile to external server.
+#
+publishLogFileToServer()
+{
+    local server="ssh.student.bth.se"
+
+    # header "Post $KMOM" | tee -a "$LOGFILE"
+    #
+    # if [[ -f "$path1" ]]; then
+    #     # shellcheck source=.dbwebb/script/inspect/kmom.d/pre.bash
+    #     source "$path1" 2>&1 | tee -a "$LOGFILE"
+    # fi
+    #
+    # if [[ -f "$path2" ]]; then
+    #     # shellcheck source=.dbwebb/script/inspect/kmom.d/$KMOM/pre.bash
+    #     source "$path2" 2>&1 | tee -a "$LOGFILE"
+    # fi
+    #
+    # [[ -f "$LOG_DOCKER_ABS" ]] && output=$( eval echo "\"$( cat "$LOG_DOCKER_ABS" )"\" )
+    # #printf "\n%s\n\n" "$output" >> "$LOGFILE_TEXT"
+    # printf "%s" "$output" | eval $TO_CLIPBOARD
 }
 
 
