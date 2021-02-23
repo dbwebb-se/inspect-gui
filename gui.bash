@@ -1185,7 +1185,7 @@ makeInspectDocker()
 {
     local kmom="$1"
 
-    header "dbwebb inspect" "Do dbwebb inspect in the background and write output to logfile." | tee -a "$LOGFILE"
+    header "dbwebb inspect" "Do dbwebb inspect in the background, using docker, and write output to logfile." | tee -a "$LOGFILE"
     # header "dbwebb inspect" "Do dbwebb inspect in the background and write output to logfile '$LOGFILE_INSPECT'." | tee -a "$LOGFILE"
     #header "dbwebb inspect" | tee -a "$LOGFILE"
 
@@ -1196,10 +1196,12 @@ makeInspectDocker()
     fi
 
     if [ $OS_TERMINAL == "linux" ]; then
-        setsid make docker-run what="make inspect what=$kmom options='--yes'" > "$LOGFILE_INSPECT" 2>&1 &
+        #setsid make docker-run what="make inspect what=$kmom options='--yes'" > "$LOGFILE_INSPECT" 2>&1 &
+        setsid docker-compose run --rm cli make inspect what=$kmom options='--yes' > "$LOGFILE_INSPECT" 2>&1 &
         DBWEBB_INSPECT_PID="$!"
     else
-        make docker-run what="make inspect what=$kmom options='--yes'" > "$LOGFILE_INSPECT" 2>&1 &
+        #make docker-run what="make inspect what=$kmom options='--yes'" > "$LOGFILE_INSPECT" 2>&1 &
+        docker-compose run --rm cli make inspect what=$kmom options='--yes' > "$LOGFILE_INSPECT" 2>&1 &
         DBWEBB_INSPECT_PID="$!"
     fi
 

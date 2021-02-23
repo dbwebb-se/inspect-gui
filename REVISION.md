@@ -3,6 +3,14 @@ Revision history
 
 
 
+v2.7.0 (2021-02-23)
+----------------------------------
+
+* Use docker-compose run instead of make docker-run when executin dbwebb inspect.
+* Add --rm when running docker-compose run.
+
+
+
 v2.6.0 (2021-02-23)
 ----------------------------------
 
