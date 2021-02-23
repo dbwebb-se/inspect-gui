@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.6.0 (2021-02-23)
+----------------------------------
+
+* Docker container should be removed, now using --rm.
+
+
+
 v2.5.1 (2020-10-30)
 ----------------------------------
 
