@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.6.0 (2021-02-23)"
+VERSION="v2.6.1 (2021-03-25)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -1430,7 +1430,8 @@ main()
                 [[ -z $seal ]] && continue
 
                 if [[ -d "$seal" ]]; then
-                    rsync -av --delete "$seal/" "$DIR/me/tentamen/"
+                    printf "\n[$acronym] Using $seal as base directory."
+                    rsync -a --delete "$seal/" "$DIR/me/tentamen/"
                 else
                     printf "\n$MSG_FAILED Sealed version is not a directory."
                     pressEnterToContinue
