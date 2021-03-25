@@ -3,7 +3,7 @@ Revision history
 
 
 
-v2.7.1 (2021-03-25)
+v2.7.2 (2021-03-25)
 ----------------------------------
 
 * Print out which dir used when rsync the exam.
