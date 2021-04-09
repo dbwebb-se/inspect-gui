@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.8.0 (2021-04-09)
+----------------------------------
+
+* The log from the docker run is attached to the course feedback, once docker is completed.
+
+
+
 v2.7.2 (2021-03-25)
 ----------------------------------
 

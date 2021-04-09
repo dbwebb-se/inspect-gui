@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.7.2 (2021-03-25)"
+VERSION="v2.8.0 (2021-04-09)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -1280,6 +1280,7 @@ runPostExtras()
     local path2="$INSPECT_SOURCE_DIR/kmom.d/$KMOM/post.bash"
     local output=
     local url=
+    local baseDir="$INSPECT_SOURCE_DIR/text"
 
     header "Post $KMOM" | tee -a "$LOGFILE"
 
@@ -1295,10 +1296,9 @@ runPostExtras()
 
     url=$( publishLogFileToServer )
 
-    [[ -f "$LOG_DOCKER" ]] && output=$( eval echo "\"$( cat "$LOG_DOCKER" )"\" )
-    #output=$( eval echo "\"$( cat "$LOG_DOCKER" )"\" )
-    #printf "\n%s\n" "$output" | tee -a "$LOGFILE"
-    printf "%s" "$output" | eval $TO_CLIPBOARD
+    feedback=$( eval echo "\"$( cat "$baseDir/$kmom.txt" )"\" )
+    [[ -f "$LOG_DOCKER" ]] && docker=$( eval echo "\"$( cat "$LOG_DOCKER" )"\" )
+    printf "%s\n\n--- Status från tester ---\n%s" "$feedback" "$docker" | eval $TO_CLIPBOARD
 }
 
 
