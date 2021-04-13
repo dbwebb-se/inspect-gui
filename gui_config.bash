@@ -28,8 +28,8 @@ export DBWEBB_TEACHER_SIGNATURE="// Läraren (lararen@bth.se)"
 # How to open a web browser
 
 # windows (cygwin)
-#export DBWEBB_BROWSER="/cygdrive/c/Program Files (x86)/Google/Chrome/Application/chrome.exe"
-#export DBWEBB_BROWSER="/cygdrive/c/Program Files (x86)/Firefox Developer Edition/firefox.exe"
+#export DBWEBB_BROWSER="/cygdrive/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe"
+#export DBWEBB_BROWSER="/cygdrive/c/Program\ Files\ \(x86\)/Firefox\ Developer\ Edition/firefox.exe"
 
 # macOs
 #export DBWEBB_BROWSER="/Applications/Firefox.app/Contents/MacOS/firefox"
