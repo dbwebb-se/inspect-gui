@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.8.2 (2021-04-16)
+----------------------------------
+
+* Do export NO_DBWEBB_INSPECT=1 in the config.bash to avoid doing a dbwebb inspect.
+
+
+
 v2.8.1 (2021-04-13)
 ----------------------------------
 

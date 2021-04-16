@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.8.1 (2021-04-13)"
+VERSION="v2.8.2 (2021-04-16)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -595,15 +595,18 @@ gui-main-menu()
         20 \
         "1" "Inspect kmom (download, docker)" \
         "2" "Inspect kmom (docker)" \
-        "3" "Inspect kmom (download, local)" \
-        "4" "Inspect kmom (local)" \
-        "5" "Inspect tentamen (rsync, docker)" \
-        "6" "Inspect tentamen (docker)" \
+        "5" "Inspect kmom (download, local)" \
+        "6" "Inspect kmom (local)" \
+        "7" "Inspect tentamen (rsync, docker)" \
+        "8" "Inspect tentamen (docker)" \
         "" "---" \
         "c" "Course menu" \
         "a" "Admin menu" \
         "q" "Quit" \
         3>&1 1>&2 2>&3 3>&-
+
+        # "3" "Inspect kmom (download, no-docker)" \
+        # "4" "Inspect kmom (no-docker)" \
 
         # TODO Clean upp this and remove from script
         #"" "---" \
@@ -1185,6 +1188,8 @@ makeInspectDocker()
 {
     local kmom="$1"
 
+    [[ $NO_DBWEBB_INSPECT ]] && return
+
     header "dbwebb inspect" "Do dbwebb inspect in the background, using docker, and write output to logfile." | tee -a "$LOGFILE"
     # header "dbwebb inspect" "Do dbwebb inspect in the background and write output to logfile '$LOGFILE_INSPECT'." | tee -a "$LOGFILE"
     #header "dbwebb inspect" | tee -a "$LOGFILE"
@@ -1239,6 +1244,40 @@ makeDockerRunExtras()
         # Run the scripts using run.bash through docker-compose
         echo "docker-compose -f docker-compose.yaml run --rm --service-ports server bash $script $kmom $acronym $LOG_DOCKER_REL" | tee -a "$LOGFILE"
         docker-compose -f docker-compose.yaml run --rm --service-ports server bash $script $kmom $acronym $LOG_DOCKER_REL 2>&1 | tee -a "$LOGFILE"
+    fi
+}
+
+
+
+#
+# Run extra testscripts without using docker.
+#
+makeNoDockerRunExtras()
+{
+    local kmom="$1"
+    local acronym="$2"
+    local path="$INSPECT_SOURCE_DIR/kmom.d/run.bash"
+    local script
+
+    # Move to root to execute make
+    cd "$DBW_COURSE_DIR" || exit
+    script="$( realpath --relative-to="${PWD}" "$path" )"
+
+    # # Run the scripts using run.bash through make
+    # header "Docker run ($kmom)" | tee -a "$LOGFILE"
+    # echo 'make docker-run-server container="server" what="bash $script $kmom $acronym"' | tee -a "$LOGFILE"
+    # make docker-run-server container="server" what="bash $script $kmom $acronym" 2>&1 | tee -a "$LOGFILE"
+
+    header "No-Docker run scripts" | tee -a "$LOGFILE"
+
+    # Only if there are scripts to execute for kmom
+    local kmomScripts="$( dirname "$path" )/$kmom"
+    if [[ ! -d "$kmomScripts" || -z "$(ls -A $kmomScripts)" ]]; then
+       echo "No scripts to execute in docker for '$kmom'." | tee -a "$LOGFILE"
+    else
+        # Run the scripts using run.bash
+        echo "bash $script $kmom $acronym $LOG_DOCKER_REL" | tee -a "$LOGFILE"
+        bash $script $kmom $acronym $LOG_DOCKER_REL 2>&1 | tee -a "$LOGFILE"
     fi
 }
 
@@ -1349,7 +1388,7 @@ main()
             # o)
             #     main-docker-menu
             #     ;;
-            4)
+            6)
                 acronym=$( gui-read-acronym $acronym )
                 [[ -z $acronym ]] && continue
 
@@ -1364,7 +1403,7 @@ main()
                 runPostExtras "$kmom" "$acronym"
                 pressEnterToContinue
                 ;;
-            3)
+            5)
                 acronym=$( gui-read-acronym $acronym )
                 [[ -z $acronym ]] && continue
 
@@ -1419,7 +1458,43 @@ main()
                 runPostExtras "$kmom" "$acronym"
                 pressEnterToContinue
                 ;;
-            5)
+            4)
+                acronym=$( gui-read-acronym $acronym )
+                [[ -z $acronym ]] && continue
+
+                kmom=$( gui-read-kmom $kmom )
+                [[ -z $kmom ]] && continue
+
+                initLogfile "$acronym" "docker"
+                # openRedovisaInBrowser "$acronym"
+                feedback "$kmom"
+                runPreExtras "$kmom" "$acronym"
+                makeInspectDocker "$kmom"
+                makeNoDockerRunExtras "$kmom" "$acronym"
+                runPostExtras "$kmom" "$acronym"
+                pressEnterToContinue
+                ;;
+            3)
+                acronym=$( gui-read-acronym $acronym )
+                [[ -z $acronym ]] && continue
+
+                kmom=$( gui-read-kmom $kmom )
+                [[ -z $kmom ]] && continue
+
+                initLogfile "$acronym" "download, docker"
+                # openRedovisaInBrowser "$acronym"
+                feedback "$kmom"
+                if ! downloadPotato "$acronym"; then
+                    pressEnterToContinue;
+                    continue
+                fi
+                runPreExtras "$kmom" "$acronym"
+                makeInspectDocker "$kmom"
+                makeNoDockerRunExtras "$kmom" "$acronym"
+                runPostExtras "$kmom" "$acronym"
+                pressEnterToContinue
+                ;;
+            7)
                 #[[ -z $acronym ]] && acronym="abtl18"
                 acronym=$( gui-read-acronym $acronym )
                 [[ -z $acronym ]] && continue
@@ -1448,7 +1523,7 @@ main()
                 runPostExtras "tentamen""$acronym"
                 pressEnterToContinue
                 ;;
-            6)
+            8)
                 #[[ -z $acronym ]] && acronym="abtl18"
                 acronym=$( gui-read-acronym $acronym )
                 [[ -z $acronym ]] && continue
