@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.8.3 (2021-05-07)
+----------------------------------
+
+* Fix to support github ssh urls that lacks .git extension.
+
+
+
 v2.8.2 (2021-04-16)
 ----------------------------------
 
