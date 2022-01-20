@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.8.4 (2021-05-19)"
+VERSION="v2.8.5 (2022-01-20)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -1337,7 +1337,11 @@ runPostExtras()
 
     feedback=$( eval echo "\"$( cat "$baseDir/$kmom.txt" )"\" )
     [[ -f "$LOG_DOCKER" ]] && docker=$( eval echo "\"$( cat "$LOG_DOCKER" )"\" )
-    printf "%s\n%s" "$feedback" "$docker" | eval $TO_CLIPBOARD
+    if [[ -f "$LOG_DOCKER" ]]; then
+        printf "%s\n\n-- Log --\n%s" "$feedback" "$docker" | eval $TO_CLIPBOARD
+    else
+        printf "%s\n%s" "$feedback" "$docker" | eval $TO_CLIPBOARD
+    fi
 }
 
 
