@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.8.6 (2022-03-25)
+----------------------------------
+
+* Fix output of feedback text when grading tentamen.
+
+
+
 v2.8.5 (2022-01-20)
 ----------------------------------
 
