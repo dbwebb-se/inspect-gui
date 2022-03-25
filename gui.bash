@@ -1522,7 +1522,7 @@ main()
                 printReceipt $acronym
                 feedback "tentamen"
                 runPreExtras "tentamen" "$acronym"
-                makeValidateDocker "tentamen"
+                #makeValidateDocker "tentamen"
                 makeDockerRunExtras "tentamen" "$acronym"
                 runPostExtras "tentamen" "$acronym"
                 pressEnterToContinue
@@ -1537,7 +1537,7 @@ main()
                 printReceipt $acronym
                 feedback "tentamen"
                 runPreExtras "tentamen" "$acronym"
-                makeValidateDocker "tentamen"
+                #makeValidateDocker "tentamen"
                 makeDockerRunExtras "tentamen" "$acronym"
                 runPostExtras "tentamen" "$acronym"
                 pressEnterToContinue

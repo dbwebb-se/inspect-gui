@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.8.8 (2022-03-25)
+----------------------------------
+
+* Remove dbwebb validate in background for tentamen.
+
+
+
 v2.8.7 (2022-03-25)
 ----------------------------------
 
