@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.8.7 (2022-03-25)"
+VERSION="v2.10.1 (2022-04-21)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
