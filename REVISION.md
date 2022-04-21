@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.10.0 (2022-04-21)
+----------------------------------
+
+* Enable to download only parts of me to increase speed.
+
+
+
 v2.9.0 (2022-04-21)
 ----------------------------------
 

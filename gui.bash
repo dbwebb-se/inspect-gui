@@ -1127,21 +1127,65 @@ feedback()
 
 
 #
+# Download onlys parts of the student files
+#
+downloadParts()
+{
+    export ACRONYM="$1"
+    local file="$2"
+
+    while read -r part;
+    do
+       printf "$part...";
+       dbwebb --force --yes --silent download "$part" "$ACRONYM" > /dev/null
+       if (( $? != 0 )); then
+           return 1
+       fi
+   done < "$file"
+}
+
+
+
+#
 # Download student files and do potatoe if needed
 #
 downloadPotato()
 {
-    local acronym="$1"
+    export KMOM="$1"
+    export ACRONYM="$2"
+    local path1="$INSPECT_SOURCE_DIR/kmom.d/download_parts.bash"
+    local path2="$INSPECT_SOURCE_DIR/kmom.d/$KMOM/download_parts.bash"
 
-    header "Download (and potato)" "Doing a silent download, potatoe if needed." | tee -a "$LOGFILE"
+    header "Download (and potato)" "" | tee -a "$LOGFILE"
 
-    if ! dbwebb --force --yes download me $acronym > /dev/null; then
+    if [[ -f "$path1" || -f "$path2" ]]; then
+        local res1=0
+        local res2=0
+
+        if [[ -f "$path1" ]]; then
+            downloadParts "$ACRONYM" "$path1"
+            res1=$?
+        fi
+
+        if [[ -f "$path2" ]]; then
+            downloadParts "$ACRONYM" "$path2"
+            res2=$?
+        fi
+
+        printf "\n";
+
+        if (( $res1 + $res2 == 0 )); then
+            return
+        fi
+    fi
+
+    if ! dbwebb --force --yes download me $ACRONYM > /dev/null; then
         printf "\n\033[32;01m---> Doing a Potato\033[0m\n\033[0;30;43mACTION NEEDED...\033[0m\n" | tee -a "$LOGFILE"
-        potatoe $acronym
-        if ! dbwebb --force --yes --silent download me $acronym; then
+        potatoe $ACRONYM
+        if ! dbwebb --force --yes --silent download me $ACRONYM; then
             printf "\n\033[0;30;41mFAILED!\033[0m Doing a full potatoe, as a last resort...\n" | tee -a "$LOGFILE"
-            potatoe $acronym "false"
-            if ! dbwebb --force --yes --silent download me $acronym; then
+            potatoe $ACRONYM "false"
+            if ! dbwebb --force --yes --silent download me $ACRONYM; then
                 printf "\n\033[0;30;41mFAILED!\033[0m Doing a full potatoe, as a last resort...\n" | tee -a "$LOGFILE"
                 exit 1
             fi
@@ -1478,7 +1522,7 @@ main()
                 # openRedovisaInBrowser "$acronym"
                 feedback "$kmom"
                 runPreDownload "$kmom" "$acronym"
-                if ! downloadPotato "$acronym"; then
+                if ! downloadPotato "$kmom" "$acronym"; then
                     pressEnterToContinue;
                     continue
                 fi
