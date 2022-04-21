@@ -1284,6 +1284,31 @@ makeNoDockerRunExtras()
 
 
 #
+# Run extra testscripts that are executed before download.
+#
+runPreDownload()
+{
+    export KMOM="$1"
+    export ACRONYM="$2"
+    local path1="$INSPECT_SOURCE_DIR/kmom.d/pre_download.bash"
+    local path2="$INSPECT_SOURCE_DIR/kmom.d/$KMOM/pre_download.bash"
+
+    header "Pre download $KMOM" | tee -a "$LOGFILE"
+
+    if [[ -f "$path1" ]]; then
+        # shellcheck source=.dbwebb/script/inspect/kmom.d/pre_download.bash
+        source "$path1" 2>&1 | tee -a "$LOGFILE"
+    fi
+
+    if [[ -f "$path2" ]]; then
+        # shellcheck source=.dbwebb/script/inspect/kmom.d/$KMOM/pre_download.bash
+        source "$path2" 2>&1 | tee -a "$LOGFILE"
+    fi
+}
+
+
+
+#
 # Run extra testscripts that are executed before docker.
 #
 runPreExtras()
@@ -1452,6 +1477,7 @@ main()
                 initLogfile "$acronym" "download, docker"
                 # openRedovisaInBrowser "$acronym"
                 feedback "$kmom"
+                runPreDownload "$kmom" "$acronym"
                 if ! downloadPotato "$acronym"; then
                     pressEnterToContinue;
                     continue

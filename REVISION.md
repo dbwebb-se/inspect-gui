@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.9.0 (2022-04-21)
+----------------------------------
+
+* Enable pre_download as helpful when it takes time to download.
+
+
+
 v2.8.8 (2022-03-25)
 ----------------------------------
 
