@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.10.2 (2022-04-21)"
+VERSION="v2.11.0 (2023-09-01)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -403,7 +403,7 @@ function getSemanticVersion
 #
 #
 checkTool dialog "Install using your packet manager (apt-get|brew install dialog)."
-checkTool realpath "Install using your packet manager (brew install coreutils)."
+#checkTool realpath "Install using your packet manager (brew install coreutils)."
 
 # What is the directory of the current course repo, find recursivly up the tree
 DBW_COURSE_FILE_NAME=".dbwebb.course"
@@ -1272,7 +1272,11 @@ makeDockerRunExtras()
 
     # Move to root to execute make
     cd "$DBW_COURSE_DIR" || exit
-    script="$( realpath --relative-to="${PWD}" "$path" )"
+
+    # realpath not available on mac ventura (odd version) nor brew
+    #script="$( realpath --relative-to="${PWD}" "$path" )"
+    script=${path#"$PWD"}
+    script=${script#"/"}
 
     # # Run the scripts using run.bash through make
     # header "Docker run ($kmom)" | tee -a "$LOGFILE"
@@ -1306,7 +1310,11 @@ makeNoDockerRunExtras()
 
     # Move to root to execute make
     cd "$DBW_COURSE_DIR" || exit
-    script="$( realpath --relative-to="${PWD}" "$path" )"
+
+    # realpath not available on mac ventura (odd version) nor brew
+    #script="$( realpath --relative-to="${PWD}" "$path" )"
+    script=${path#"$PWD"}
+    script=${script#"/"}
 
     # # Run the scripts using run.bash through make
     # header "Docker run ($kmom)" | tee -a "$LOGFILE"

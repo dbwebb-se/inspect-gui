@@ -2,6 +2,12 @@ Revision history
 ==================================
 
 
+v2.11.0 (2023-09-01)
+----------------------------------
+
+* Remove dependency to realpath since Mac Venture included a bad one.
+
+
 
 v2.10.2 (2022-04-21)
 v2.10.1 (2022-04-21)
