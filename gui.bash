@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.11.0 (2023-09-01)"
+VERSION="v2.12.0 (2023-09-06)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -269,8 +269,9 @@ function checkTool() {
 function openUrl {
     local url="$1"
 
-    printf "$url\n" 2>&1
+    printf "$url\n"
     eval "$BROWSER" "$url" &
+    sleep 0.5
 }
 
 
@@ -453,12 +454,16 @@ BROWSER="firefox"
 TO_CLIPBOARD="xclip -selection c"
 OS_TERMINAL=""
 
-if [[ "$OSTYPE" == "linux-gnu" ]]; then   # Linux, use defaults
+if [[ "$(uname -r)" == *"microsoft"* ]]; then   # WSl on Unix
+    OS_TERMINAL="wsl"
+    TO_CLIPBOARD="clip.exe"
+    BROWSER="wslview"
+elif [[ "$OSTYPE" == "linux-gnu" ]]; then   # Linux, use defaults
     OS_TERMINAL="linux"
 elif [[ "$OSTYPE" == "darwin"* ]]; then   # Mac OSX
     OS_TERMINAL="macOS"
     TO_CLIPBOARD="iconv -t macroman | pbcopy"
-    BROWSER="/Applications/Firefox.app/Contents/MacOS/firefox"
+    BROWSER="open"
 elif [[ "$OSTYPE" == "cygwin" ]]; then    # Cygwin
     OS_TERMINAL="cygwin"
     TO_CLIPBOARD="cat - > /dev/clipboard"
@@ -1092,7 +1097,7 @@ initLogfile()
 
     header "GUI Inspect" | tee "$LOGFILE"
 
-    printf "%s\n%s %s %s\n%s\nInspect GUI %s\n" "$( date )" "$COURSE" "$kmom" "$acronym" "$what" "$VERSION" | tee -a "$LOGFILE"
+    printf "%s\n%s %s %s\n%s\nInspect GUI %s (%s)\n" "$( date )" "$COURSE" "$kmom" "$acronym" "$what" "$VERSION" "$OS_TERMINAL" | tee -a "$LOGFILE"
 }
 
 
@@ -1107,11 +1112,10 @@ feedback()
     local output
 
     header "Feedback" > "$LOGFILE_TEXT"
-
     output=$( eval echo "\"$( cat "$baseDir/$kmom.txt" )"\" )
     #output=$(< "$DIR/text/$kmom.txt" )
     printf "\n%s\n\n" "$output" >> "$LOGFILE_TEXT"
-    printf "%s" "$output" | eval $TO_CLIPBOARD
+    printf "%s" "$output" | eval "$TO_CLIPBOARD"
 
     if [[ -f "$baseDir/${kmom}_extra.txt" ]]; then
         output=$(< "$baseDir/${kmom}_extra.txt" )

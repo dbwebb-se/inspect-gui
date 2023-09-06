@@ -32,6 +32,7 @@ export DBWEBB_TEACHER_SIGNATURE="// Läraren (lararen@bth.se)"
 #export DBWEBB_BROWSER="/cygdrive/c/Program\ Files\ \(x86\)/Firefox\ Developer\ Edition/firefox.exe"
 
 # macOs
+#export DBWEBB_BROWSER="open"
 #export DBWEBB_BROWSER="/Applications/Firefox.app/Contents/MacOS/firefox"
 #export DBWEBB_BROWSER="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 #export DBWEBB_BROWSER="/Applications/Microsoft\ Edge.app/Contents/MacOS/Microsoft\ Edge"
@@ -52,3 +53,6 @@ export DBWEBB_TEACHER_SIGNATURE="// Läraren (lararen@bth.se)"
 
 # linux
 #export DBWEBB_TO_CLIPBOARD="xclip -selection c"
+
+# WSL 
+#export DBWEBB_TO_CLIPBOARD="clip.exe"
