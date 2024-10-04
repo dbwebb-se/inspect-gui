@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.12.0 (2023-09-06)"
+VERSION="v2.13.0 (2024-10-04)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -487,6 +487,13 @@ INSPECT_SOURCE_CONFIG_FILE="$INSPECT_SOURCE_DIR/config.bash"
 
 # shellcheck source=$DIR/.dbwebb/inspect-src/config.bash
 [[ -f $INSPECT_SOURCE_CONFIG_FILE ]] && source "$INSPECT_SOURCE_CONFIG_FILE"
+
+# Use docker composer ot docker-compose
+DOCKER="docker compose"
+if ! command -v $DOCKER 2>&1 >/dev/null
+then
+    DOCKER="docker-compose"
+fi
 
 # Useful defaults which are used within the application
 # @TODO This is not really needed
@@ -1251,11 +1258,13 @@ makeInspectDocker()
 
     if [ $OS_TERMINAL == "linux" ]; then
         #setsid make docker-run what="make inspect what=$kmom options='--yes'" > "$LOGFILE_INSPECT" 2>&1 &
-        setsid docker-compose run --rm cli make inspect what=$kmom options='--yes' > "$LOGFILE_INSPECT" 2>&1 &
+        #setsid docker-compose run --rm cli make inspect what=$kmom options='--yes' > "$LOGFILE_INSPECT" 2>&1 &
+        setsid $DOCKER run --rm cli make inspect what=$kmom options='--yes' > "$LOGFILE_INSPECT" 2>&1 &
         DBWEBB_INSPECT_PID="$!"
     else
         #make docker-run what="make inspect what=$kmom options='--yes'" > "$LOGFILE_INSPECT" 2>&1 &
-        docker-compose run --rm cli make inspect what=$kmom options='--yes' > "$LOGFILE_INSPECT" 2>&1 &
+        #docker-compose run --rm cli make inspect what=$kmom options='--yes' > "$LOGFILE_INSPECT" 2>&1 &
+        $DOCKER run --rm cli make inspect what=$kmom options='--yes' > "$LOGFILE_INSPECT" 2>&1 &
         DBWEBB_INSPECT_PID="$!"
     fi
 
@@ -1295,8 +1304,10 @@ makeDockerRunExtras()
        echo "No scripts to execute in docker for '$kmom'." | tee -a "$LOGFILE"
     else
         # Run the scripts using run.bash through docker-compose
-        echo "docker-compose -f docker-compose.yaml run --rm --service-ports server bash $script $kmom $acronym $LOG_DOCKER_REL" | tee -a "$LOGFILE"
-        docker-compose -f docker-compose.yaml run --rm --service-ports server bash $script $kmom $acronym $LOG_DOCKER_REL 2>&1 | tee -a "$LOGFILE"
+        #echo "docker-compose -f docker-compose.yaml run --rm --service-ports server bash $script $kmom $acronym $LOG_DOCKER_REL" | tee -a "$LOGFILE"
+        echo "$DOCKER -f docker-compose.yaml run --rm --service-ports server bash $script $kmom $acronym $LOG_DOCKER_REL" | tee -a "$LOGFILE"
+        #docker-compose -f docker-compose.yaml run --rm --service-ports server bash $script $kmom $acronym $LOG_DOCKER_REL 2>&1 | tee -a "$LOGFILE"
+        $DOCKER -f docker-compose.yaml run --rm --service-ports server bash $script $kmom $acronym $LOG_DOCKER_REL 2>&1 | tee -a "$LOGFILE"
     fi
 }
 
