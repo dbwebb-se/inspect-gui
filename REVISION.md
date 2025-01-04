@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.14.0 (2025-01-04)
+----------------------------------
+
+* Use `-it` when executin docker to get interactive console.
+
+
+
 v2.13.0 (2024-10-04)
 ----------------------------------
 
