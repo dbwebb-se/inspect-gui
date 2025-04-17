@@ -3,6 +3,13 @@ Revision history
 
 
 
+v2.15.0 (2025-04-17)
+----------------------------------
+
+* Redirect stderr to dev/null when opening url in browser.
+
+
+
 v2.14.0 (2025-01-04)
 ----------------------------------
 

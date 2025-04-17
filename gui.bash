@@ -2,7 +2,7 @@
 #
 # GUI for dbwebb inspect.
 #
-VERSION="v2.14.0 (2025-01-04)"
+VERSION="v2.15.0 (2025-04-17)"
 
 # Messages
 MSG_OK="\033[0;30;42mOK\033[0m"
@@ -270,7 +270,8 @@ function openUrl {
     local url="$1"
 
     printf "$url\n"
-    eval "$BROWSER" "$url" &
+    #eval "$BROWSER" "$url" &
+    eval "$BROWSER \"$url\"" 2>/dev/null &
     sleep 0.5
 }
 
